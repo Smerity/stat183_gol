@@ -1,5 +1,5 @@
 cat("Reading in the Conway data\n")
-###
+####
 train <- read.csv(file="data/train.csv", header=TRUE, sep=",")
 
 mark_gol = function(guess, gold, total=400) {
