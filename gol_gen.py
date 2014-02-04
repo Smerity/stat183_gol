@@ -38,17 +38,34 @@ def neighbours(board, sx, sy):
 # All ways to live: (CENTER, # OF NEIGHBOURS)
 to_live = defaultdict(int, {(1, 2): 1, (1, 3): 1, (0, 3): 1})
 
+results = defaultdict(lambda: defaultdict(int))
+
 print 'Processing {} boards'.format(2 ** (5 * 5))
 for i, l in enumerate(product([0, 1], repeat=5 * 5)):
-  if i % 10000 == 0:
+  if i and i % 10000 == 0:
     print '... at board {} ...'.format(i)
+    #print results
+    #print '... at board {} ...'.format(i)
   board = to_board(l)
   new_board = defaultdict(int)
+  r = []
   for sy in xrange(1, BOARD_SIZE - 1):
     for sx in xrange(1, BOARD_SIZE - 1):
       new_board[(sx, sy)] = to_live[(board[(sx, sy)], neighbours(board, sx, sy))]
+      r.append(str(new_board[(sx, sy)]))
+
+  if board[(2, 2)]:
+    results[''.join(r)]['on'] += 1
+  else:
+    results[''.join(r)]['off'] += 1
   if False:
     print_board(board)
     print '...TO...'
     print_board(new_board)
     print
+
+fn = 'reverse_mapping.csv'
+f = open(fn, 'w')
+f.write('key, on, off\n')
+for key in sorted(results):
+  f.write('"{}", {}, {}\n'.format(key, results[key]['on'], results[key]['off']))
