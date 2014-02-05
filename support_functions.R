@@ -1,3 +1,6 @@
+require(compiler)
+enableJIT(3)
+
 source("~/Development/stat183/packages/gol_simulator/gol_simulator.R")
 
 ## build a distribution for a point in the grid
@@ -5,13 +8,12 @@ build_distribution = function(
   L= 3,             # size of the classifying grid
   n_row = 20,       # number of rows
   n_col = 20,       # number of columns
-  N_steps = 1,            # number of time steps
   point = c(9,10),  # the point that we want to consider
   N_samples = 1e3,  # the number of sample games to play 
   save_file = TRUE, # toggle for saving the file to disk 
   ##
-  file_name = "p_dist.Rda",   # name of the file
-  file_path = "data/"                # path to the file 
+  file_ext = "",       # name of the file
+  file_path = "data/"  # path to the file 
 )
 {
   source("~/Development/stat183/packages/gol_simulator/gol_simulator.R")
@@ -25,14 +27,14 @@ build_distribution = function(
   i_col = max(point[2]-floor(L/2), 1):min(point[2]+floor(L/2), n_col)
   
   ## initialize data frame for storing results
-  p_dist = data.frame(name = character(), is_on = integer(), count = integer())
+  prob_dist = data.frame(name = character(), is_on = integer(), count = integer())
   
   for( i in 1:N_samples)
   {
     ## simulate a board
     set.seed(i)
     p = runif(1)
-    X = gol_sim(n_row= n_row, n_col = n_col, N_steps=N_steps+5, prob = p, graphics = FALSE)
+    X = gol_sim(n_row= n_row, n_col = n_col, N_steps=6, prob = p, graphics = FALSE)
     if( sum(X) == 0) next
     
     ## print out status updates
@@ -40,74 +42,53 @@ build_distribution = function(
     
     ## select a subblock of cose
     is_on      = X[point[1], point[2], 5]
-    X_subset_0 = X[i_row, i_col,5]
-    X_subset_N = X[i_row, i_col,N_steps+5]
+    X_subset_1 = X[i_row, i_col,5]
+    X_subset_1 = X[i_row, i_col,6]
     
     # classify end board
     # flatten the matrix, by row
-    tag   = str_replace_all( toString(as.integer(X_subset_N)), ", ", "")
+    tag   = str_replace_all( toString(as.integer(X_subset_1)), ", ", "")
     
-    index = which(p_dist$name == tag)
+    index = which(prob_dist$name == tag)
     
     if( length(index) == 0)
     {
-      p_dist = rbind(p_dist,  data.frame(name = tag, is_on = is_on, count = 1 ))
+      prob_dist = rbind(prob_dist,  data.frame(name = tag, is_on = is_on, count = 1 ))
     } else
     {
-      p_dist$is_on[index] = p_dist$is_on[index]+ is_on
-      p_dist$count[index] = p_dist$count[index]+ 1
+      prob_dist$is_on[index] = prob_dist$is_on[index]+ is_on
+      prob_dist$count[index] = prob_dist$count[index]+ 1
     }
   }
   
-  prob = with(p_dist, is_on/count)
-  p_dist = cbind(p_dist, prob = prob)
+  prob = with(prob_dist, is_on/count)
+  prob_dist = cbind(prob_dist, prob = prob)
+  
+  prob_list = list( dist = prob_dist, L = L)
   
   # save the data frame
   if( save_file)
   {
+    file_name = paste0("prod_dist", file_extension, ".Rda")
     path_name = paste0(file_path, file_name)
-    saveRDS(p_dist, file = path_name)
+    #saveRDS(prob_list, file = path_name)
+    save(prob_list, file = path_name)
   }
-  return(p_dist)
+  return(prob_list)
   
 }
 
-# build 5 support tables, one for each number of steps
-build_dists = function( N_samples = 1e3, L = 3)
+pred_start_board = function(X_end, prob_list, prob_thr = .5,  verbose = FALSE)
 {
-  # initalize list of distributions
-  prob_dist = list()
-  for(N in 1:5)
-  {
-    cat("\nN = ", N)
-    dist_name = sprintf("D%i_%1.0e", N, N_samples)
-    prob_dist[[N]] =  build_distribution( L = L, N_samples = N_samples, N_steps = N, file_name = dist_name)
+  L = prob_list$L
+  prob_dist = prob_list$dist
+  if(verbose)
+  { 
+    cat("\n\nL = ", L)
+    print(prob_dist)
   }
   
-  prob_dist = c(prob_dist, L = L)
-}
-
-# build 5 support tables, one for each number of steps
-load_dists = function( size = "1e6", path = "data/", L = 3 )
-{
-  # initalize list of distributions
-  prob_dist = list()
-  for(N in 1:5)
-  {
-    dist_name = sprintf("D%i_%s",N, size)
-    cat("\nloading:", dist_name)
-    prob_dist[[N]] = readRDS(paste0(path, dist_name))
-  }
   
-  prob_dist = c(prob_dist, L = L)
-  return(prob_dist)
-}
-
-pred_start_board = function(X_end, N_steps = 1, prob_dist, verbose = FALSE)
-{
-  L = prob_dist$L
-  
-  if(verbose){ cat("\n L = ", L)}
   X_start = matrix(0, 20,20)
   
   # double loop over the board
@@ -115,7 +96,7 @@ pred_start_board = function(X_end, N_steps = 1, prob_dist, verbose = FALSE)
   {
     for( col in 1:20)
     { 
-      if(verbose){cat("\nrow =", row, "col = ", col)}
+      if(verbose){cat("\n\nrow =", row, "col = ", col)}
       # build interval
       i_row = max(row-floor(L/2), 1):min(row+floor(L/2), 20)
       i_col = max(col-floor(L/2), 1):min(col+floor(L/2), 20)
@@ -150,7 +131,7 @@ pred_start_board = function(X_end, N_steps = 1, prob_dist, verbose = FALSE)
       # flatten the matrix, by row
       tag   = str_replace_all( toString(as.integer(X_sub)), ", ", "")
       
-      index = with(prob_dist[[N_steps]], which(name == tag))
+      index = with(prob_dist, which(name == tag))
       if(verbose)
       {
         cat("\nindex = ", index)
@@ -163,8 +144,8 @@ pred_start_board = function(X_end, N_steps = 1, prob_dist, verbose = FALSE)
       } 
       else
       {
-        prob  = with(prob_dist[[N_steps]], prob[index])
-        X_start[row, col] = ifelse(prob < .7, 0, 1)
+        prob  = with(prob_dist, prob[index])
+        X_start[row, col] = ifelse(prob < prob_thr, 0, 1)
       }
     } # end col loop
   } # end row loop
