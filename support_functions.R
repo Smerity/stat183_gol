@@ -1,7 +1,7 @@
 require(compiler)
 enableJIT(3)
 
-source("~/Development/stat183/packages/gol_simulator/gol_simulator.R")
+source("gol_simulator.R")
 
 ## build a distribution for a point in the grid
 build_distribution = function(
@@ -12,11 +12,11 @@ build_distribution = function(
   N_samples = 1e3,  # the number of sample games to play 
   save_file = TRUE, # toggle for saving the file to disk 
   ##
-  file_ext = "",       # name of the file
+  file_ext = "foo.csv",       # name of the file
   file_path = "data/"  # path to the file 
 )
 {
-  source("~/Development/stat183/packages/gol_simulator/gol_simulator.R")
+  source("gol_simulator.R")
   require(stringr)
   
   # check if the point is in the grid
