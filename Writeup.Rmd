@@ -1,0 +1,40 @@
+[TITLE]
+========================================================
+The Game of Life
+========================================================
+
+Kaggle - Can we predict Life in reverse?
+-------------------------------------------------------
+What we did?
+
+We first realized that for cases where delta was equal to 1, the heuristic of letting all start boards just equal the end boards did a very good job. For these isolated cases our error was around 0.116957. From here we tried applying the same heuristic to cases where delta was greater than 1. Sadly letting the start board equal the end board performed worse than did the simple all off heuristic. 
+
+But then we decided that perhaps there existed a threshold -- of live cells alive on the end board -- where below the threshold the heuristic of letting the start board equal the end board performed better than the all off heuristic, and above the threshold the all off heuristic performed better than start equal end. 
+![TEST](Delta1.png)
+![TEST](Delta2.png)
+![TEST](Delta3.png)
+![TEST](Delta4.png)
+![TEST](Delta5.png)
+
+Submitting a solution!
+-------------------------------------------------------
+```{r eval=FALSE}
+test <- read.csv("test.csv",stringsAsFactors=FALSE)
+
+## Predict board 
+test.out <- as.matrix(test[,3:402])
+delta <- test[,2]
+for(i in 1:nrow(test)){
+  if(i%%100==0){ print(i) }
+  
+  ## predict board takes a board (as a vector) and the number of steps backward to predict
+  ## and returns a the predicted board
+  test.out[i,] <- predictBoard(test.out[i,],steps=delta[i])
+}
+
+## Add board id's and make sure column names match the requirements
+test.submission <- cbind(test$id,test.out)
+colnames(test.submission) <- c("id",colnames(train)[grep("start",colnames(train))])
+write.csv(x=test.submission,file="exampleSubmission.csv",row.names=FALSE)
+```
+
