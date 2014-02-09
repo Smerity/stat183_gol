@@ -65,10 +65,12 @@ predictBoard <- function(board.vec,steps){
     }
     else if(steps>1)
     {
-      if ((steps==2 & live<50) || (steps==3 & live<30) || (steps==4 & live<25) || (steps==5 & live<15))
+      #if ((steps==2 & live<50) || (steps==3 & live<30) || (steps==4 & live<25) || (steps==5 & live<15))
+      if ((steps==2 & live<50))
       {
         return(board.vec)
       }
+      #if (F) {}
 
       else
       {

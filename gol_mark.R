@@ -10,7 +10,6 @@ mark_gol = function(guess, gold, total=400) {
 results <- c()
 cols <- ncol(train)
 for (i in 1:nrow(train)) {
-  cat(i, "\n")
   # Ignore id and delta
   pixels <- train[i, 3:cols]
   #
@@ -18,7 +17,9 @@ for (i in 1:nrow(train)) {
   end <- pixels[401:800]
   #
   results <- append(results, mark_gol(start, end))
+  #results <- append(results, mark_gol(train[i, 3:13], train[i, 15:25]))
   if (i %% 100 == 0) {
+    cat(i, "\n")
     print(mean(results))
   }
 }
