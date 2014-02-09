@@ -9,12 +9,18 @@ What we did?
 
 We first realized that for cases where delta was equal to 1, the heuristic of letting all start boards just equal the end boards did a very good job. For these isolated cases our error was around 0.116957. From here we tried applying the same heuristic to cases where delta was greater than 1. Sadly letting the start board equal the end board performed worse than did the simple all off heuristic. 
 
-But then we decided that perhaps there existed a threshold -- of live cells alive on the end board -- where below the threshold the heuristic of letting the start board equal the end board performed better than the all off heuristic, and above the threshold the all off heuristic performed better than start equal end. 
-![TEST](Delta1.png)
-![TEST](Delta2.png)
-![TEST](Delta3.png)
-![TEST](Delta4.png)
-![TEST](Delta5.png)
+We then decided that perhaps there existed a threshold -- of live cells alive on the end board -- where below the threshold the heuristic of letting the start board equal the end board performed better than the all off heuristic, and above the threshold the all off heuristic performed better than start equal end heuristic. We investigated the total errors of using both methods and found that in general with 'few' living cells on the end board, it was better to use the start equal end heuristic. Specifically we plotted the total error against the number of living cells and we were able to come up with a threshold for each delta.
+![Delta1](Delta1.png)
+![Delta2](Delta2.png)
+![Delta3](Delta3.png)
+![Delta4](Delta4.png)
+![Delta5](Delta5.png)
+So essentially we found the threshold by finding where the differential between 'all off' heuristic error and 'start equals end' heuristic was the greatest, or:
+$$max(aoff-startEqEnd)$$ where $$aoff $$ is the all off heuristic and $$startEqEnd $$ is the start equals end heuristic. We found the number of living cell index that correlated with this maximum differential. The idea behind this is rather simple. Starting from living cells equals 0, the two curves (all off error and start is end error) begin to diverge. This divergance is explained by one heuristic performing better than the other (ie start equals end). Then comes a point where they begin to converge. At this point the roles flip and the all off heuristic starts to perform better than the start equals end. Here is a reading of the thresholds we found. (Note: there is no threshold for detla==1 because it is always better to use the start equals end heuristic when delta is 1).
+
+
+![Thresholds](Thresholds.png)
+
 
 Submitting a solution!
 -------------------------------------------------------
