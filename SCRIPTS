@@ -1,0 +1,5 @@
+# Extract just the stop columns
+cat data/train.csv | cut -d ',' -f 1-2,403-
+
+# Extract just the start columns
+cat data/train.csv | cut -d ',' -f 1-2,3-402
