@@ -2,7 +2,6 @@ getLiveNeighbors <- function(board,idx){
     ncols <- ncol(board)
     nrows <- nrow(board)
 
-    
     r.idx <- (idx-1)%%nrows+1
     c.idx <- ceiling(idx/ncols)
     neighbors <- c()
@@ -20,7 +19,7 @@ getLiveNeighbors <- function(board,idx){
 
 updateState <- function(board,idx){
 
-    ## 0 or 1 live neighbors dies 
+    ## 0 or 1 live neighbors dies
     ## 2 or 3 live neighbors lives
     ## 4 or more neighbors dies (overcrowding)
     ## Exactly 3 live cells, lives/born
@@ -59,7 +58,7 @@ updateBoard <- function(board){
 predictBoard <- function(board.vec,steps){
 
     board <- matrix(board.vec,nrow=20,ncol=20)
-    
+
     if(steps > 1)
     {
       new.board <- matrix(0,nrow=20,ncol=20)
@@ -82,9 +81,10 @@ detectBlocks <- function(board){
    nblocks <- 0
    nr <- nrow(board)
    nc <- ncol(board)
+   target <- matrix(c(rep(0,4),rep(c(0,1,1,0),2),rep(0,4)),nrow=4)
    for(i in 1:(nc-3)){
        for(j in 1:(nr-3)){
-           if(all(board[i:(i+3),j:(j+3)]==matrix(c(rep(0,4),rep(c(0,1,1,0),2),rep(0,4)),nrow=4))){
+           if(all(board[i:(i+3),j:(j+3)] == target)){
                blockList[[nblocks+1]] <- c(i,j)
                nblocks <- nblocks+1
            }
