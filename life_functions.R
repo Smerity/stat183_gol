@@ -58,32 +58,21 @@ updateBoard <- function(board){
 predictBoard <- function(board.vec,steps){
 
     board <- matrix(board.vec,nrow=20,ncol=20)
-    live <- sum(board)
     if(steps == 1)
     {
       return(board.vec)
     }
     else if(steps>1)
     {
-      #if ((steps==2 & live<50) || (steps==3 & live<30) || (steps==4 & live<25) || (steps==5 & live<15))
-      if ((steps==2 & live<50))
-      {
-        return(board.vec)
-      }
-      #if (F) {}
-
-      else
-      {
-        new.board <- matrix(0,nrow=20,ncol=20)
-        blist <- detectBlocks(board)
-        if(length(blist)>0){
-          for(b in 1:length(blist)){
-            i <- blist[[b]][1]
-            j <- blist[[b]][2]
-            new.board[i:(i+3),j:(j+3)] <- matrix(c(rep(0,4),rep(c(0,1,1,0),2),rep(0,4)),nrow=4)
-          }}
-        return(as.vector(new.board))
-      }
+      new.board <- matrix(0,nrow=20,ncol=20)
+      blist <- detectBlocks(board)
+      if(length(blist)>0){
+        for(b in 1:length(blist)){
+          i <- blist[[b]][1]
+          j <- blist[[b]][2]
+          new.board[i:(i+3),j:(j+3)] <- matrix(c(rep(0,4),rep(c(0,1,1,0),2),rep(0,4)),nrow=4)
+        }}
+      return(as.vector(new.board))
     }
 }
 

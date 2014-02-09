@@ -36,4 +36,4 @@ For graphs showing the difference in performance between the **same = end** and 
 Submitting a solution
 ---------------------
 
-To submit a solution, simply run the *submission_code.R* script, ensuring that there is a directory calld *data* that contains *train.csv* and *test.csv*.
+To submit a solution, simply run the *submission_code.R* script, ensuring that there is a directory calld *data* that contains *train.csv* and *test.csv*. A file shall be produced called *to_submit.csv* which has our final submission. For simplicity, however, we have included our submission file as a zip in the folder.

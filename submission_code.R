@@ -1,11 +1,11 @@
+# The JIT compiler substantially improves the speed
 require(compiler)
 enableJIT(3)
 
-## Alex's code
+## The code library initially supplied by Alex, modified by us
 source("life_functions.R")
 train <- read.csv("data/train.csv")
-#test <- read.csv("data/test.csv", stringsAsFactors = FALSE)
-test <- read.csv("data/train_no_train.csv", stringsAsFactors = FALSE)
+test <- read.csv("data/test.csv", stringsAsFactors = FALSE)
 
 ## Predict board
 test.out <- as.matrix(test[, 3:402])
@@ -23,4 +23,4 @@ for (i in 1:nrow(test)) {
 ## Add board id's and make sure column names match the requirements
 test.submission <- cbind(test$id, test.out)
 colnames(test.submission) <- c("id", colnames(train)[grep("start", colnames(train))])
-write.csv(x = test.submission, file = "multi_thresholds_on_train.csv", row.names = FALSE)
+write.csv(x = test.submission, file = "to_submit.csv", row.names = FALSE)
