@@ -19,8 +19,10 @@ int main(int argc, const char *argv[]) {
   board[7 * BOARDX + 9] = 1;
 
   print_board(board);
-  evolve(board);
-  print_board(board);
+  for(int i = 0; i < 5; ++i) {
+    evolve(board);
+    print_board(board);
+  }
 
   free(board);
   return 0;
