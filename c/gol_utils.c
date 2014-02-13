@@ -2,16 +2,34 @@
 //
 #include "gol_utils.h"
 
+int has_neighbour(int *board, int i, int j) {
+  int surrounding = 0;
+  for (int k = (i == 0 ? 0 : i-1); k <= (i == 19 ? 19 : i+1); k++)
+    for (int l = (j == 0 ? 0 : j-1); l <= (j == 19 ? 19 : j+1); l++)
+      if (!(k == i && l == j))
+        return 1;
+  return 0;
+}
+
+int neighbours(int *board, int i, int j) {
+  int surrounding = 0;
+  for (int k = (i == 0 ? 0 : i-1); k <= (i == 19 ? 19 : i+1); k++)
+    for (int l = (j == 0 ? 0 : j-1); l <= (j == 19 ? 19 : j+1); l++)
+      if (!(k == i && l == j))
+        surrounding += board[k * BOARDX + l];
+  return surrounding;
+}
+
 void print_board(int *board) {
   printf("=-=-=-=-=-=\n");
   for(int y = 0; y < BOARDY; ++y) {
     for(int x = 0; x < BOARDX; ++x) {
       if (board[y * BOARDX + x]) {
         //printf("X");
-        printf("%d", board[y * BOARDX + x]);
+        printf("%d ", board[y * BOARDX + x]);
       }
       else {
-        printf("-");
+        printf("- ");
       }
     }
     printf("\n");
@@ -32,12 +50,7 @@ void evolve(int *board) {
   // calculate the next step
   for (int i = 0; i < 20; i++) {
     for (int j = 0; j < 20; j++) {
-      int surrounding = 0;
-      for (int k = (i == 0 ? 0 : i-1); k <= (i == 19 ? 19 : i+1); k++)
-        for (int l = (j == 0 ? 0 : j-1); l <= (j == 19 ? 19 : j+1); l++)
-          if (!(k == i && l == j))
-            surrounding += copy[k * BOARDX + l];
-
+      int surrounding = neighbours(copy, i, j);
       board[i * BOARDX + j] = (surrounding == 3) || (surrounding == 2 && copy[i * BOARDX + j]);
     }
   }
