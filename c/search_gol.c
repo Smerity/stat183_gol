@@ -3,13 +3,10 @@
 #include "string.h"
 #include "gol_utils.h"
 
-#define DEBUG (0)
+#define DEBUG (1)
 
 // Toggle a flip in the given board and the possible board set
 void toggle_board(int a, int b, int c, int *board, int *possible) {
-  //if (a == 0 || b == 0 || c == 0) {
-  //  printf("%d %d %d\n", a, b, c);
-  //}
   board[a] = !board[a];
   //possible[a] = !possible[a];
   if (b != -1) {
@@ -42,38 +39,21 @@ int exact_board(int *guess, int *end) {
   return 1;
 }
 
-// Check if the guess board, evolved forward, doesn't make anything live that shouldn't
-// TODO: This is actually wrong ... You can kill something that's living by overcrowding
-int sane_board(int *guess, int *end, int *possible) {
-  int evolved[400];
-  for (int i = 0; i < 400; ++i) evolved[i] = guess[i];
-  evolve(evolved);
-  for (int i = 0; i < BOARDY; i++) {
-    for (int j = 0; j < BOARDX; j++) {
-      if (evolved[i * BOARDX + j] == 1 && end[i * BOARDX + j] == 0) {
-        // This can still be fixed if there's a possible slot next to it
-        //if (!has_neighbour(possible, i, j)) {
-          return 0;
-        //}
-      }
-    }
-  }
-  return 1;
-}
-
 int _recurse_board(int *guess, int *end, int *unhappy_pixels, int unhappy_index, int *possible, int *found) {
   static unsigned int calls = 0;
+  if (unhappy_index == 0) calls = 0;
   ++calls;
   if (calls % 500000 == 0) {
     printf("%u\n", calls);
-    if (DEBUG) print_board(guess);
   }
   // If all pixels are happy, make sure it maps to a real board, then add to found
   if (unhappy_pixels[unhappy_index] == -1) {
     if (!exact_board(guess, end)) {
       return 0;
     }
-    if (DEBUG) print_board(guess);
+    if (DEBUG) {
+      print_board(guess);
+    }
     // Ensure the guess board is equal to the end board
     // If so, add all on pixels to the found
     for (int i = 0; i < BOARDY; i++) {
@@ -83,22 +63,16 @@ int _recurse_board(int *guess, int *end, int *unhappy_pixels, int unhappy_index,
     }
     return 1;
   }
-  // NOTE: This will kill valid boards but might be useful as an optimization
-  // Ensure the board is at least "sane"
-  if (!sane_board(guess, end, possible)) {
-    return 0;
-  }
-  //
   // Collect the target pixel we're going to "fix"
   int i, j;
   i = unhappy_pixels[unhappy_index] / BOARDX;
   j = unhappy_pixels[unhappy_index] % BOARDX;
   // Get the nine neighbours of this pixel
   int pixel_ind = 0;
-  int pixels[8];
+  int pixels[9];
   for (int k = (i == 0 ? 0 : i-1); k <= (i == BOARDY-1 ? BOARDY-1 : i+1); k++) {
     for (int l = (j == 0 ? 0 : j-1); l <= (j == BOARDX-1 ? BOARDX-1 : j+1); l++) {
-      if (!(k == i && l == j) && possible[k * BOARDX + l]) {
+      if (possible[k * BOARDX + l]) {
         pixels[pixel_ind++] = k * BOARDX + l;
         possible[k * BOARDX + l] = 0;
       }
@@ -195,16 +169,26 @@ int *recurse_board(int *end) {
 int main(int argc, const char *argv[]) {
   int *board = calloc(BOARDX * BOARDY, sizeof(int));
 
+  // Box
+  board[13 * BOARDX + 5] = 1;
+  board[13 * BOARDX + 6] = 1;
+  board[14 * BOARDX + 5] = 1;
+  board[14 * BOARDX + 6] = 1;
+  // Double box
+  board[16 * BOARDX + 5] = 1;
+  board[16 * BOARDX + 6] = 1;
+  board[17 * BOARDX + 5] = 1;
+  board[17 * BOARDX + 6] = 1;
   // Blinker
-  board[5 * BOARDX + 5] = 1;
-  board[4 * BOARDX + 5] = 1;
-  board[3 * BOARDX + 5] = 1;
+/*  board[5 * BOARDX + 5] = 1;*/
+/*  board[4 * BOARDX + 5] = 1;*/
+/*  board[3 * BOARDX + 5] = 1;*/
   // R-pentomino
-  board[9 * BOARDX + 9] = 1;
-  board[9 * BOARDX + 10] = 1;
-  board[8 * BOARDX + 9] = 1;
-  board[8 * BOARDX + 7] = 1;
-  board[7 * BOARDX + 9] = 1;
+/*  board[9 * BOARDX + 9] = 1;*/
+/*  board[9 * BOARDX + 10] = 1;*/
+/*  board[8 * BOARDX + 9] = 1;*/
+/*  board[8 * BOARDX + 7] = 1;*/
+/*  board[7 * BOARDX + 9] = 1;*/
 
   //print_board(board);
   int *found = recurse_board(board);
