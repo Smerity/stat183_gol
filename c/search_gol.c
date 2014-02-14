@@ -93,21 +93,27 @@ int _recurse_board(int *guess, int *end, int *unhappy_pixels, int unhappy_index,
           // Only add 2 pixels if starting live neighbours is 0 or 1
           if (n <= 1) {
             for (int c = b + 1; c < pixel_ind; ++c) {
-              // Only add 3 pixels if starting live neighbours is 0
+              // Add 3 pixels when no neighbours -- valid in all cases
               if (n == 0) {
                 toggle_board(pixels[a], pixels[b], pixels[c], guess, possible);
                 if (check_pixel(guess, i, j)) total_found += _recurse_board(guess, end, unhappy_pixels, unhappy_index + 1, possible, found);
                 toggle_board(pixels[a], pixels[b], pixels[c], guess, possible);
               }
             }
-            toggle_board(pixels[a], pixels[b], -1, guess, possible);
-            if (check_pixel(guess, i, j)) total_found += _recurse_board(guess, end, unhappy_pixels, unhappy_index + 1, possible, found);
-            toggle_board(pixels[a], pixels[b], -1, guess, possible);
+            // Add two pixels if: (n == 1) [results in n == 3] || (target is on && n == 0) [results in n == 2 and alive]
+            if (n == 1 || (m == 1 && n == 0)) {
+              toggle_board(pixels[a], pixels[b], -1, guess, possible);
+              if (check_pixel(guess, i, j)) total_found += _recurse_board(guess, end, unhappy_pixels, unhappy_index + 1, possible, found);
+              toggle_board(pixels[a], pixels[b], -1, guess, possible);
+            }
           }
         }
-        toggle_board(pixels[a], -1, -1, guess, possible);
-        if (check_pixel(guess, i, j)) total_found += _recurse_board(guess, end, unhappy_pixels, unhappy_index + 1, possible, found);
-        toggle_board(pixels[a], -1, -1, guess, possible);
+        // Only add a single pixel if neighbours is (n == 1 and target is on) [results in n == 2 and alive] or (n == 2) [results in n == 3]
+        if ((n == 1 && m == 1) || (n == 2)) {
+          toggle_board(pixels[a], -1, -1, guess, possible);
+          if (check_pixel(guess, i, j)) total_found += _recurse_board(guess, end, unhappy_pixels, unhappy_index + 1, possible, found);
+          toggle_board(pixels[a], -1, -1, guess, possible);
+        }
       }
     }
     if (check_pixel(guess, i, j)) total_found += _recurse_board(guess, end, unhappy_pixels, unhappy_index + 1, possible, found);
