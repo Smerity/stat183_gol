@@ -68,7 +68,8 @@ gol_sim = function(
     verbose    = FALSE,# TRUE will display print outs of boards 
     graphics   = TRUE, # TRUE will display animation 
     prob       = 0.5,  # probability of the initial cell being occcupied 
-    time_delay = 0.25) # time delay between animation frames
+    time_delay = 0.1,
+    t_delay = 5) # time delay between animation frames
 {
   
     # check that the rows and/or columns are bigger than 1
@@ -113,7 +114,14 @@ gol_sim = function(
             if(graphics)
             {   
                 display_board(X_stored[,,i])
-                Sys.sleep(time_delay)
+                if (i<5)
+                {
+                  Sys.sleep(time_delay)
+                }
+                else
+                {
+                  Sys.sleep(t_delay)
+                }
             }
         
         } # evolution loop
