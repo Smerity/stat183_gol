@@ -73,7 +73,7 @@
 
 <div class="title">
   STAT183 Challenge:  <span class="crimson">Reverse Game of Life</span>
-                      <span class="ltgray"> [week 2]</span> <br />
+                      <span class="ltgray"> [week 3]</span> <br />
   <img src="http://schools-wikipedia.org/images/194/19479.png" /> <br />
   Strategy: <span class="crimson">"5x5, 4x4 offsets, ensembles, and forward"</span> <br />
   Team: <span class="crimson">Groeneveld, Merity, Randell</span> 
