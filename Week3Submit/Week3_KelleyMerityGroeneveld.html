@@ -274,7 +274,7 @@ We initially started this week by writing an ensemble method with most of the su
 <br />
 The general idea of the ensemble method is as follows: for every board in the test data, compute the forward error for every solution set we have and take the board with the least forward error as our new best prediction. As per the above discussion we ended up only running this on delta is 1 and 2, and just used the best solution&#39;s board for delta is 1,2 and 3. 
 <br/>
-We started by loading in all solution sets we wanted to iterate over. In order to reproduce our code you will need files of the following name in your directory. The file names are simple the overall error computed by Kaggle. They are ordered from best to worst total Kaggle prediction error.</p>
+We started by loading in all solution sets we wanted to iterate over. <b> In order to reproduce our code you will need files of the following name in your directory.</b> The file names are simply the overall error computed by Kaggle. They are ordered from best to worst total Kaggle prediction error.</p>
 
 <hr>
 
@@ -289,14 +289,77 @@ source(&quot;still-life-functions.R&quot;)
 
 <p><br /></p>
 
-<pre><code class="r"># df_test &lt;- read.csv(&#39;test.csv&#39;) # Load in our predictions to ensemble over
-# num_ensemble &lt;- 5 df_1 &lt;- read.csv(&#39;11568.csv&#39;) df_2 &lt;-
-# read.csv(&#39;11623.csv&#39;) df_3 &lt;- read.csv(&#39;11720.csv&#39;) df_4 &lt;-
-# read.csv(&#39;11777.csv&#39;) df_5 &lt;- read.csv(&#39;12121.csv&#39;) # df_best will be by
-# default our best prediction, we will update in place if we find a better #
-# prediction as by forward error df_best &lt;- df_1 lst =
-# list(df_1,df_2,df_3,df_4,df_5,df_6,df_7)
+<pre><code class="r">df_test &lt;- read.csv(&quot;test.csv&quot;)
+</code></pre>
 
+<pre><code>## Warning: cannot open file &#39;test.csv&#39;: No such file or directory
+</code></pre>
+
+<pre><code>## Error: cannot open the connection
+</code></pre>
+
+<pre><code class="r">
+# Load in our predictions to ensemble over
+num_ensemble &lt;- 5
+df_1 &lt;- read.csv(&quot;11568.csv&quot;)
+</code></pre>
+
+<pre><code>## Warning: cannot open file &#39;11568.csv&#39;: No such file or directory
+</code></pre>
+
+<pre><code>## Error: cannot open the connection
+</code></pre>
+
+<pre><code class="r">df_2 &lt;- read.csv(&quot;11623.csv&quot;)
+</code></pre>
+
+<pre><code>## Warning: cannot open file &#39;11623.csv&#39;: No such file or directory
+</code></pre>
+
+<pre><code>## Error: cannot open the connection
+</code></pre>
+
+<pre><code class="r">df_3 &lt;- read.csv(&quot;11720.csv&quot;)
+</code></pre>
+
+<pre><code>## Warning: cannot open file &#39;11720.csv&#39;: No such file or directory
+</code></pre>
+
+<pre><code>## Error: cannot open the connection
+</code></pre>
+
+<pre><code class="r">df_4 &lt;- read.csv(&quot;11777.csv&quot;)
+</code></pre>
+
+<pre><code>## Warning: cannot open file &#39;11777.csv&#39;: No such file or directory
+</code></pre>
+
+<pre><code>## Error: cannot open the connection
+</code></pre>
+
+<pre><code class="r">df_5 &lt;- read.csv(&quot;12121.csv&quot;)
+</code></pre>
+
+<pre><code>## Warning: cannot open file &#39;12121.csv&#39;: No such file or directory
+</code></pre>
+
+<pre><code>## Error: cannot open the connection
+</code></pre>
+
+<pre><code class="r">
+# df_best will be by default our best prediction, we will update in place if
+# we find a better prediction as by forward error
+df_best &lt;- df_1
+</code></pre>
+
+<pre><code>## Error: object &#39;df_1&#39; not found
+</code></pre>
+
+<pre><code class="r">
+lst = list(df_1, df_2, df_3, df_4, df_5)
+</code></pre>
+
+<pre><code>## Error: object &#39;df_1&#39; not found
 </code></pre>
 
 <p><br />
@@ -340,7 +403,7 @@ For every board in every solution set, we start by pulling out the test board an
             }
         }
     }
-    tot_err &lt;- tot_err + min_err
+
     df_best[i, ] &lt;- best_board
 }
 </code></pre>
@@ -349,7 +412,20 @@ For every board in every solution set, we start by pulling out the test board an
 </code></pre>
 
 <p><span class="section-head">2. 5x5 and 3x3 SUB-BOARD approach - training the model</span>
-<br /></p>
+<br />
+Similar to last week&#39;s idea of 5x5 patterns, we expanded to combining our 5x5 model with 3x3 sub boards. If a 5x5 board showed up in our data less than 5 times, we would set the probability associated with that middle cell being on as negative so that we had a flag. Coming across this pattern again when running the algorithm, we would check to see if the value was between -0.9 and 0.0. If it was, we would use the surrounding 3x3 pattern as the prediction probability of the board. If the value of it was between -0.9 and -1.0 we would then just set the middle pixel to be on because even though the pattern showed up fewer than 5 times we are pretty certain that the middle cell should still be on &ndash; because in almost every case it was on. </p>
+
+<p>[for code snippets of ]</p>
+
+<p><br />
+<span class="section-head">3. Ensembling 3x3 and 5x5 with a 4x4 sub-board prediction</span>
+<br />
+Include the weightings etc.. all the good stuff. </p>
+
+<p><br />
+<span class="section-head">4. Combinatorsorous</span>
+<br />
+So the general idea of all of this was to combine all three methods, by using the optimal result of the combination of 3x3, 4x4 and 5x5 with the forward proxy ensemble method. In general it would be the same procedure/logic as the original ensemble method but we would let the default best board be our own solution set generated by the above method.</p>
 
 <p></div></p>
 
