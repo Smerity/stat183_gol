@@ -167,6 +167,13 @@ for(i in 1:50000){
 ```
 
 <span class="section-head">2. 5x5 and 3x3 SUB-BOARD approach - training the model</span>
+Similar to last week's idea of 5x5 patterns, we expanded to combining our 5x5 model with 3x3 sub boards. If a 5x5 board showed up in our data less than 5 times, we would set the probability associated with that middle cell being on as negative so that we had a flag. Coming across this pattern again when running the algorithm, we would check to see if the value was between -0.8 and -0.1. If it was, we would use the surrounding 3x3 pattern as the prediction probability of the board. If the value of it was between -0.8 and -1.0 we would then just set the middle pixel to be on because even though the pattern showed up fewer than 5 times we are pretty certain that the middle cell should still be on -- because in almost every case it was on. 
+
+```{r}
+
+
+```
+
 <br />
 
 
